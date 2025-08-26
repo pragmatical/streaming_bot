@@ -24,14 +24,13 @@ export function ChatInput({ onSend, isStreaming, onStop }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8 }}>
+    <form onSubmit={handleSubmit}>
       <input
         type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Ask something..."
         disabled={isStreaming}
-        style={{ flex: 1, padding: '8px 12px' }}
       />
       {isStreaming ? (
         <button
