@@ -182,7 +182,7 @@ export async function streamChat(body: ChatRequest, onToken: (t: string) => void
  - [x] Implement `llm_service.stream_chat(...)` using OpenAI SDK (Azure)
  - [x] Integrate Semantic Kernel (system prompt + history)
 - [x] Implement FastAPI route returning `StreamingResponse`
-- [ ] Add basic logging and error handling
+ - [x] Add basic logging and error handling
 - [ ] Unit tests with mocked streaming
 
 3) Frontend UI (Vite + React)
