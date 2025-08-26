@@ -41,7 +41,12 @@ logs/
 # Environment files
 .env
 .env.*
+backend/.env
+backend/.env.*
+webapp/.env
+webapp/.env.*
 !.env.example
+!backend/.env.example
 
 # Poetry (keep poetry.lock tracked)
 .poetry/

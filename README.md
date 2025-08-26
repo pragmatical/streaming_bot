@@ -12,7 +12,7 @@ docker-compose.yml
 
 ## Run with Docker Compose
 
-1) Create `.env` at repo root (copy from `.env.example`).
+1) Create `backend/.env` (copy from `backend/.env.example`).
 2) Build and start services:
 
 ```bash
@@ -24,6 +24,10 @@ Services:
 - Webapp:  http://localhost:5173
 
 The webapp proxies `/api` to the backend in dev.
+
+Env location notes:
+- For Docker Compose, env is read from `backend/.env`.
+- For local backend dev (`cd backend && poetry run ...`), settings load from `backend/.env` by default.
 
 ## Backend dev (without Docker)
 

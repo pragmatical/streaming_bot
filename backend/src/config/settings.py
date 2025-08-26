@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     Use Pydantic BaseSettings to parse env vars and provide defaults.
     """
 
+    # Load from .env in current working directory (backend/.env in dev)
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     app_host: str = Field("0.0.0.0", env="APP_HOST")

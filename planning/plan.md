@@ -178,8 +178,8 @@ export async function streamChat(body: ChatRequest, onToken: (t: string) => void
  - [x] Add `docker-compose.yml` to run both services
 
 2) Backend streaming API
-- [x] Define Pydantic schemas (`ChatRequest`, `Message`, `Options`)
-- [ ] Implement `llm_service.stream_chat(...)` using OpenAI SDK (Azure)
+ - [x] Define Pydantic schemas (`ChatRequest`, `Message`, `Options`)
+ - [x] Implement `llm_service.stream_chat(...)` using OpenAI SDK (Azure)
 - [ ] Integrate Semantic Kernel (system prompt + history)
 - [x] Implement FastAPI route returning `StreamingResponse`
 - [ ] Add basic logging and error handling
