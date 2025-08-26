@@ -25,5 +25,10 @@ class Settings(BaseSettings):
         default="2024-07-01-preview", env="AZURE_OPENAI_API_VERSION"
     )
 
+    # Default generation parameters (can be overridden per-request)
+    generation_max_tokens: int = Field(512, env="GENERATION_MAX_TOKENS")
+    generation_temperature: float = Field(0.2, env="GENERATION_TEMPERATURE")
+    generation_top_p: float = Field(1.0, env="GENERATION_TOP_P")
+
 
 settings = Settings()  # loads from environment and .env file

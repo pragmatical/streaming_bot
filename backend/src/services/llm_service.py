@@ -64,7 +64,11 @@ async def stream_chat(
             ch.add_user_message(message)
 
             # Options mapping
-            gen_cfg = {}
+            gen_cfg = {
+                "max_tokens": settings.generation_max_tokens,
+                "temperature": settings.generation_temperature,
+                "top_p": settings.generation_top_p,
+            }
             if options:
                 if options.max_tokens is not None:
                     gen_cfg["max_tokens"] = options.max_tokens
@@ -104,6 +108,11 @@ async def stream_chat(
         "messages": _to_openai_messages(history, message),
         "stream": True,
     }
+    # Defaults from settings
+    params["max_tokens"] = settings.generation_max_tokens
+    params["temperature"] = settings.generation_temperature
+    params["top_p"] = settings.generation_top_p
+    # Per-request overrides
     if options:
         if options.max_tokens is not None:
             params["max_tokens"] = options.max_tokens
