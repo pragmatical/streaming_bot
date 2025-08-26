@@ -3,6 +3,7 @@ import { MessageList } from './components/MessageList'
 import { ChatInput } from './components/ChatInput'
 import { streamChat } from './lib/streamClient'
 import type { Message } from './types/chat'
+import { nowIso } from './lib/time'
 
 export default function App() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -20,7 +21,12 @@ export default function App() {
     setError(null)
     setIsStreaming(true)
     // push user message and an empty assistant message we'll fill as tokens arrive
-    setMessages((prev) => [...prev, { role: 'user', content: text }, { role: 'assistant', content: '' }])
+    const createdAt = nowIso()
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', content: text, createdAt },
+      { role: 'assistant', content: '', createdAt },
+    ])
     liveIndexRef.current = messages.length + 1 // index of the placeholder assistant message
     try {
       await streamChat(
@@ -34,7 +40,12 @@ export default function App() {
             const idx = liveIndexRef.current
             if (idx == null || idx >= prev.length) return prev
             const next = [...prev]
-            next[idx] = { ...next[idx], content: next[idx].content + chunk }
+            const msg = next[idx]
+            next[idx] = {
+              ...msg,
+              content: msg.content + chunk,
+              startedAt: msg.startedAt ?? nowIso(),
+            }
             return next
           })
         },
@@ -44,6 +55,22 @@ export default function App() {
       setError(e?.message || 'Request failed')
     } finally {
       setIsStreaming(false)
+      // set endedAt for the assistant message when stream finishes (or stops)
+      setMessages((prev) => {
+        const next = [...prev]
+        for (let i = next.length - 1; i >= 0; i--) {
+          const msg = next[i]
+          if (msg.role === 'assistant' && !msg.endedAt) {
+            next[i] = {
+              ...msg,
+              endedAt: nowIso(),
+              startedAt: msg.startedAt ?? msg.createdAt ?? nowIso(),
+            }
+            break
+          }
+        }
+        return next
+      })
       liveIndexRef.current = null
     }
   }
@@ -73,7 +100,6 @@ export default function App() {
           <div className="input-row">
             <ChatInput onSend={handleSend} isStreaming={isStreaming} onStop={handleStop} />
           </div>
-          <div className="tip">Tip: set AZURE_* .env values and run via docker-compose for end-to-end streaming.</div>
         </div>
       </div>
     </div>
