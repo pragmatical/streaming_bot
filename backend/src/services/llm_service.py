@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from typing import AsyncGenerator, Iterable, List
+from typing import AsyncGenerator, List
 
 from openai import AsyncAzureOpenAI
 
 from ..config.settings import settings
 from ..schemas.chat import ChatOptions, Message
 from .kernel_service import KernelService
+from ..utils.errors import ConfigError, UpstreamError
+from ..utils.logging import get_logger
 
 
 def _to_openai_messages(history: List[Message] | None, user_message: str):
@@ -23,8 +25,13 @@ async def stream_chat(
     history: List[Message] | None = None,
     options: ChatOptions | None = None,
 ) -> AsyncGenerator[str, None]:
-    """Stream chat via Semantic Kernel; fallback to direct OpenAI if needed."""
+    """Stream chat via Semantic Kernel; fallback to direct OpenAI if needed.
 
+    Raises:
+        ConfigError: When required configuration for Azure OpenAI is missing.
+        UpstreamError: When upstream provider fails and we cannot continue streaming.
+    """
+    logger = get_logger("services.llm")
     kernel_service = KernelService()
     kernel = kernel_service.get_kernel()
 
@@ -74,14 +81,13 @@ async def stream_chat(
                 if content:
                     yield content
             return
-    except Exception:
+    except Exception as e:
         # Fall back to direct OpenAI below
-        pass
+        logger.debug("SK streaming failed; falling back to OpenAI", exc_info=True)
 
     # Fallback: direct OpenAI SDK
     if not settings.azure_openai_api_key or not settings.azure_openai_endpoint:
-        yield "Configuration error: Missing Azure OpenAI settings (.env)."  # type: ignore[misc]
-        return
+        raise ConfigError("Missing Azure OpenAI settings (.env)")
 
     client = AsyncAzureOpenAI(
         api_key=settings.azure_openai_api_key,
@@ -91,8 +97,7 @@ async def stream_chat(
 
     model = settings.azure_openai_deployment or ""
     if not model:
-        yield "Configuration error: AZURE_OPENAI_DEPLOYMENT is not set."  # type: ignore[misc]
-        return
+        raise ConfigError("AZURE_OPENAI_DEPLOYMENT is not set")
 
     params = {
         "model": model,
@@ -115,4 +120,4 @@ async def stream_chat(
                 if delta and getattr(delta, "content", None):
                     yield delta.content
     except Exception as e:  # pragma: no cover
-        yield f"[stream error] {e}"  # type: ignore[misc]
+        raise UpstreamError(str(e))
