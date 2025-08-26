@@ -173,6 +173,9 @@ export async function streamChat(body: ChatRequest, onToken: (t: string) => void
 - [x] Add `.env.example` with required Azure vars
 - [x] Update README with Poetry install/run instructions
 - [x] Add `.gitignore` for Python, Poetry, and future UI
+ - [x] Restructure repo into `backend/` (FastAPI) and `webapp/` (Vite React)
+ - [x] Add Dockerfiles for backend and webapp
+ - [x] Add `docker-compose.yml` to run both services
 
 2) Backend streaming API
 - [x] Define Pydantic schemas (`ChatRequest`, `Message`, `Options`)
@@ -183,7 +186,7 @@ export async function streamChat(body: ChatRequest, onToken: (t: string) => void
 - [ ] Unit tests with mocked streaming
 
 3) Frontend UI (Vite + React)
-- [ ] Scaffold Vite + React + TS app under `ui/`
+- [x] Scaffold Vite + React + TS app under `webapp/`
 - [ ] Implement `streamClient.ts` and types
 - [ ] Build `ChatWindow` with `MessageList` + `ChatInput`
 - [ ] Wire streaming to append tokens incrementally

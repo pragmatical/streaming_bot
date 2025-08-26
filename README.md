@@ -2,19 +2,41 @@
 
 Streaming chatbot demo scaffold.
 
-## Backend quick-start (Poetry)
+## Project structure
 
-1) Create and populate `.env` from `.env.example`.
-2) Install Poetry dependencies.
-
-```bash
-poetry install
+```
+backend/      # FastAPI app (Python + Poetry)
+webapp/       # Vite + React UI
+docker-compose.yml
 ```
 
-3) Run the dev server.
+## Run with Docker Compose
+
+1) Create `.env` at repo root (copy from `.env.example`).
+2) Build and start services:
 
 ```bash
+docker compose up --build
+```
+
+Services:
+- Backend: http://localhost:8000
+- Webapp:  http://localhost:5173
+
+The webapp proxies `/api` to the backend in dev.
+
+## Backend dev (without Docker)
+
+```
+cd backend
+poetry install
 poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-FastAPI will run on http://localhost:8000
+## Webapp dev (without Docker)
+
+```
+cd webapp
+npm install
+npm run dev -- --host
+```
